@@ -9,18 +9,15 @@ const connectionProperties = require('./util/connection')
 //testing the model class js
 const user = require('./model/user')
 
-
 const app = express();
 const handlebars = require('express-handlebars');
-const redis = require('redis')
 const session = require('express-session'); 
-const redisStore = require('connect-redis')(session);
 
 
 //connection configuration
 const conn = mysql.createConnection(connectionProperties);
  
-//test connect to database
+//connect to database
 conn.connect((err) =>{
   if(err) throw err;
   console.log('Mysql Connected...');
@@ -33,7 +30,7 @@ app.use('/assets',express.static(__dirname + '/public'));
 var hbs = handlebars.create({
   layoutsDir: __dirname + '/views/layouts',
   extname: 'hbs',
-  defaultLayout: 'master',
+  defaultLayout: 'login',
   partialsDir: __dirname + '/views/partials/'
 });
 app.set('view engine', 'hbs');
@@ -50,20 +47,28 @@ app.use(session({
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
   secret: '2359',
-  store: new redisStore({ client : redis.createClient()}),
   unset:'destroy'
 }));
 
-
+var sess;
 
 
  
 //route for homepage
 app.get('/',(req, res) => {
   console.log('session : ', req.session)
-  if(req.session.userId && req.session.username){
-    res.render('layouts/master');
+  sess = req.session;
+  //check session whether it has already logged in
+  if(sess.isLoggedIn){
+    res.render('layouts/master', 
+    {
+      layout:'master',
+      firstName:sess.firstName,
+      lastName:sess.lastName,
+      isLoggedIn: sess.isLoggedIn
+    });
   }else{
+    //if no login session then redirect to login page
     res.redirect('/login')
   }
     

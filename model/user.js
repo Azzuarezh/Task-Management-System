@@ -25,6 +25,9 @@ let query = conn.query(sql, [username,password],
             //set the session               
             req.session.userId = result[0].userId;
             req.session.username = result[0].username;
+            req.session.firstName = result[0].firstName;
+            req.session.lastName = result[0].lastName;
+            req.session.isLoggedIn = true;
             //delete the password so it won't be stored in session
             delete result[0].password
         }       
@@ -44,7 +47,7 @@ exports.signOut = function(req, res, next){
         } else {
             console.log('req.session after destroyed:', req.session)
             res.clearCookie('Session');
-            res.end('/');
+            res.redirect('/login');
         }
     });
 }

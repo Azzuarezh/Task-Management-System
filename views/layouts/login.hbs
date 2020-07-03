@@ -58,16 +58,13 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-  alert('ready boss!')
   $('#submit').on('click',function(){
-    alert('clicked!')
     data = {"username":$("#inputUserName").val(), "password":$("#inputPassword").val()}
     console.log('data: ', data);
     $.post('/login',data,function(response){
       console.log(response)
-      if(response){
-        toastr["info"]("Hello {user}", "Login")        
-        window.location = '/'
+      if(response){            
+        window.location.href = '/'
       }
     })
   });
