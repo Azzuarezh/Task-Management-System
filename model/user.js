@@ -4,9 +4,6 @@ const bodyParser = require('body-parser');
 var connectionProperties = require('../util/connection');
 const conn = mysql.createConnection(connectionProperties);
 
-exports.setsession = function(req,res,next){
-    req.session.user = req.body.user;
-}
 
 exports.signIn = function(req, res){
 var username=req.body.username;
@@ -19,8 +16,7 @@ let query = conn.query(sql, [username,password],
             console.error("ERROR DUDE!!!!! ",err.stack);
             res.status(500);
         }
-                   
-        
+        var loginstatus = 0;        
         if(result.length > 0 ){
             //set the session               
             req.session.userId = result[0].userId;
@@ -28,10 +24,12 @@ let query = conn.query(sql, [username,password],
             req.session.firstName = result[0].firstName;
             req.session.lastName = result[0].lastName;
             req.session.isLoggedIn = true;
+            req.session.fistTimeLogin =true;
             //delete the password so it won't be stored in session
             delete result[0].password
-        }       
-        res.send(result[0])       
+            loginstatus = 1
+        }      
+        res.send({'loginstatus':loginstatus})       
     });
 }
 

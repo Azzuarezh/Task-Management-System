@@ -59,12 +59,17 @@
 <script type="text/javascript">
 $(document).ready(function(){
   $('#submit').on('click',function(){
+    
     data = {"username":$("#inputUserName").val(), "password":$("#inputPassword").val()}
     console.log('data: ', data);
     $.post('/login',data,function(response){
       console.log(response)
-      if(response){            
-        window.location.href = '/'
+      if(response.loginstatus = 1){ 
+        toastr["info"]("Hello {{firstName}}!", "Welcome")           
+        window.location.href = '/event?greeting=true'
+      }
+      else{
+        toastr["error"]("Sorry, Username or password not correct!", "Login failed")
       }
     })
   });

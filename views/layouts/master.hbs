@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <!-- Bootstrap core CSS -->
     <link type="text/css" href="/assets/css/bootstrap.css" rel="stylesheet">
+    <!-- FontAwesome core -->
+    <link type="text/css" href="/assets/css/font-awesome.css" rel="stylesheet">
+    
     <!-- Toastr CSS -->
     <link type="text/css"  href="/assets/css/toastr.css" rel="stylesheet">
 
@@ -15,11 +18,42 @@
     <meta name="theme-color" content="#563d7c">
   </head>
   <body>
-    {{> navbar }}
-    <script type="text/js" src="/assets/js/jquery-3.5.1.min.js"></script>
-    <script type="text/js" src="/assets/js/bootstrap.js"></script>
+    <input type="hidden" id="greeting" value="{{greeting}}">
+
+    {{> navbar }}   
+      {{#if eventPage}}
+        {{> eventContent}}
+      {{else if calendarPage}}
+        {{> calendarContent}}
+      {{else if profilePage}}
+        {{> calendarContent}}
+      {{/if}}
+      
+      
+
+    <script type="text/javascript" src="./assets/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap.js"></script>
     <!-- toastr -->
-    <script type="text/js" src="/assets/js/toastr.min.js"></script>
-    {{!-- <script type="text/js" src="/assets/js/trigger-toastr.js"></script> --}}
+    <script type="text/javascript" src="/assets/js/toastr.min.js"></script>
+   <script type="text/javascript" src="/assets/js/toastr.min.js"></script>
+      <script>
+        $(document).ready(function(){
+
+          //check if this page loaded when user has sign in or it is called by another page
+          if($('#greeting').val()){
+              toastr["info"]("Hello {{firstName}}!", "Welcome")
+          }
+         
+          
+
+          //get the events
+          $.ajax({url: "/event/getTodaysEvent",type:'POST'})
+          .done(function(result) {
+                console.log('events :', result)
+              })
+          
+
+        });
+      </script> 
   </body>
 </html>

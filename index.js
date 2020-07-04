@@ -8,6 +8,7 @@ const connectionProperties = require('./util/connection')
 
 //testing the model class js
 const user = require('./model/user')
+const evt = require('./model/event')
 
 const app = express();
 const handlebars = require('express-handlebars');
@@ -24,7 +25,7 @@ conn.connect((err) =>{
 });
  
 //set folder public as static folder for static file (resource)
-app.use('/assets',express.static(__dirname + '/public'));
+app.use('/assets',express.static(path.join(__dirname, "public")));
 
 
 var hbs = handlebars.create({
@@ -52,37 +53,79 @@ app.use(session({
 
 var sess;
 
+//this section is for views path
 
- 
-//route for homepage
-app.get('/',(req, res) => {
-  console.log('session : ', req.session)
+app.get('/login',(req, res) => {
+  res.render('layouts/master', {
+    layout:'master',
+    firstName:sess.firstName,
+    lastName:sess.lastName   
+  });
+});
+
+app.get('/event',(req, res) => {
   sess = req.session;
   //check session whether it has already logged in
   if(sess.isLoggedIn){
     res.render('layouts/master', 
     {
       layout:'master',
+      eventPage :true,
+      greeting: req.query.greeting,
       firstName:sess.firstName,
-      lastName:sess.lastName,
-      isLoggedIn: sess.isLoggedIn
+      lastName:sess.lastName 
     });
   }else{
     //if no login session then redirect to login page
     res.redirect('/login')
-  }
-    
-});
-
-app.get('/login',(req, res) => {
-  res.render('layouts/login');
+  }    
 });
 
 
+app.get('/calendar',(req, res) => {
+  sess = req.session;
+  //check session whether it has already logged in
+  if(sess.isLoggedIn){
+    res.render('layouts/master', 
+    {
+      layout:'master',
+      calendarPage :true,
+      firstName:sess.firstName,
+      lastName:sess.lastName  
+    });
+  }else{
+    //if no login session then redirect to login page
+    res.redirect('/login')
+  }    
+});
 
-// this section is for user API
+app.get('/profile',(req, res) => {
+  sess = req.session;
+  //check session whether it has already logged in
+  if(sess.isLoggedIn){
+    res.render('layouts/master', 
+    {
+      layout:'master',
+      profilePage :true,
+      firstName:sess.firstName,
+      lastName:sess.lastName  
+    });
+  }else{
+    //if no login session then redirect to login page
+    res.redirect('/login')
+  }    
+});
+
+
+
+
+// this section for ajax api path (event, user, calendar which call via Ajax)
 app.post('/login',user.signIn);
 app.post('/logout',user.signOut);
+
+app.post('/event/getTodaysEvent',  evt.getUserEventsToday);
+
+
 
 //server listening
 app.listen(8000, () => {
