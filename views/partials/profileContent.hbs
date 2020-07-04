@@ -1,9 +1,30 @@
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" id="content-section">
-    <h2>Today's schedule</h2>
+    <h2>{{firstName}} {{lastName}}</h2>
     <div class="d-flex justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom">            
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="container">
-        		Form User input
+                 <div class="form-group">
+                    <label for="txtfirstName">Fist Name:</label>
+                    <input type="text" class="form-control" id="txtfirstName">
+                </div>
+                <div class="form-group">
+                    <label for="txtlastName">Fist Name:</label>
+                    <input type="text" class="form-control" id="txtlastName">
+                </div>
+                <div class="form-group">
+                    <label for="txtUsername">User name:</label>
+                    <input type="text" class="form-control" disabled="disabled" id="txtUsername">
+                </div>
+                <div class="form-group">
+                    <label for="pwd">Password:</label>
+                    <input type="password" class="form-control" id="pwd">
+                </div> 
+                <div class="form-group">
+                    <label for="confirmPwd">Confirm Password:</label>
+                     <input type="password" class="form-control" id="confirmPwd">
+                </div>
+
+                <button class="btn btn-primary btn-small" id="btnSaveUser">Save</button>
             </div>
         </div>
     </div>

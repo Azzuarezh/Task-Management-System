@@ -56,11 +56,7 @@ var sess;
 //this section is for views path
 
 app.get('/login',(req, res) => {
-  res.render('layouts/master', {
-    layout:'master',
-    firstName:sess.firstName,
-    lastName:sess.lastName   
-  });
+  res.render('layouts/login', {layout:'login'});
 });
 
 app.get('/event',(req, res) => {
@@ -70,10 +66,11 @@ app.get('/event',(req, res) => {
     res.render('layouts/master', 
     {
       layout:'master',
+      pageTitle:'Events',
       eventPage :true,
       greeting: req.query.greeting,
       firstName:sess.firstName,
-      lastName:sess.lastName 
+      lastName:sess.lastName,
     });
   }else{
     //if no login session then redirect to login page
@@ -89,6 +86,7 @@ app.get('/calendar',(req, res) => {
     res.render('layouts/master', 
     {
       layout:'master',
+      pageTitle:'Calendar',
       calendarPage :true,
       firstName:sess.firstName,
       lastName:sess.lastName  
@@ -106,6 +104,7 @@ app.get('/profile',(req, res) => {
     res.render('layouts/master', 
     {
       layout:'master',
+      pageTitle:'Profile',
       profilePage :true,
       firstName:sess.firstName,
       lastName:sess.lastName  
