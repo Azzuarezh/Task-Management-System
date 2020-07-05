@@ -1,9 +1,18 @@
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" id="content-section">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                 <div class="btn-toolbar mb-2 mb-md-0">
-                <div class="btn-group mr-2">
-                    <button class="btn btn-sm btn-outline-primary" data-action="add" data-toggle="modal" data-target="#modalEvent"><i class="fa fa-plus"></i> Add new Events</button>
-                </div>
+                    <div class="btn-group mr-2">
+                        <button class="btn btn-sm btn-outline-primary dropdown-toggle"                         
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false" 
+                        id="dropdownAddEventButton"><i class="fa fa-plus">
+                        </i> Add new Events
+                        </button>
+                         <div class="dropdown-menu" aria-labelledby="dropdownAddEventButton">
+                            <a class="dropdown-item" href="#" data-action="add" data-toggle="modal" data-target="#modalEventQuery">By Simple Text</a>
+                            <a class="dropdown-item" href="#" data-action="add" data-toggle="modal" data-target="#modalEvent">With Form</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 

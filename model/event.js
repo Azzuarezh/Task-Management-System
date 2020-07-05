@@ -11,7 +11,7 @@ exports.getUserEventsToday = function(req, res){
 
     if(typeof(req.session.userId) == 'undefined'){        
         console.error("there is no user id in session. please login to see the event");
-        res.status(500).send({ error: 'Something failed!' })
+        res.status(500).send({ error: 'There is no user id in session. please login to see the event' })
     }else{
         var userId = req.session.userId 
         var todayStartDatetime = dateparser.todayStartDatetime(); 
@@ -26,11 +26,35 @@ exports.getUserEventsToday = function(req, res){
         function(err,result){
             if(err) {
                 console.error("ERR! : ",err.stack);
-                res.status(500).send({ error: 'Something failed!' })
+                res.status(500).send({ error: 'Something failed!'})
             } 
             console.log(result)      
             res.send(result)       
         });  
     }
     
+}
+
+exports.getEventById = function(req,res){
+    if(typeof(req.session.userId) == 'undefined'){        
+        console.error("there is no user id in session. please login to see the event");
+        res.status(500).send({ error: 'There is no user id in session. please login to see the event' })
+    }else{
+        var userId = req.session.userId 
+        var eventId = req.body.eventId
+
+        console.log('userid :', userId)
+        console.log('eventid', eventid)
+
+        let sql = "select * from events where eventId =?";
+        let query = conn.query(sql, [eventId],
+        function(err,result){
+            if(err) {
+                console.error("ERR! : ",err.stack);
+                res.status(500).send({ error: 'Something failed!'})
+            } 
+            console.log(result)      
+            res.send(result)       
+        });  
+    }
 }

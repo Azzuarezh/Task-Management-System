@@ -12,6 +12,9 @@
     
     <!-- Toastr CSS -->
     <link type="text/css"  href="/assets/css/toastr.css" rel="stylesheet">
+    <!-- Bootsrap-datepicker CSS -->
+    <link type="text/css"  href="/assets/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
 
     <!-- Custom styles for this template -->
     <link type="text/css"  href="/assets/css/dashboard.css" rel="stylesheet">
@@ -30,111 +33,30 @@
       {{/if}}
       
       {{> modalEventContent }}
+      {{> modalEventQueryContent}}
 
     <script type="text/javascript" src="./assets/js/jquery-3.5.1.min.js"></script>
-    <script type="text/javascript" src="./assets/js/bootstrap.js"></script>
+    <script type="text/javascript" src="./assets/js/moment-with-locales.js"></script>
+
+    <script type="text/javascript" src="./assets/js/bootstrap.bundle.js"></script>
     <!-- toastr -->
-    <script type="text/javascript" src="/assets/js/toastr.min.js"></script>
-   <script type="text/javascript" src="/assets/js/toastr.min.js"></script>
+    <script type="text/javascript" src="./assets/js/toastr.min.js"></script>
+
+    <!-- bootstrap-datepicker -->
+    <script type="text/javascript" src="./assets/js/bootstrap-datepicker.min.js"></script>
+    <!-- index.js is our functionality -->
+    <script type="text/javascript" src="./assets/js/App/index.js"></script>
+    <script>
+      $(document).ready(function(){
+            //check if this page loaded when user has sign in or it is called by another page
+        if($('#greeting').val()){
+            toastr["info"]("Hello {{firstName}}!", "Welcome")
+        }
+      })
+    </script>
 
 <script>
-$(document).ready(function(){
 
-
-  function getDateObject(dte){
-    listOfDay = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-    listOfMonth = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-    dateOnly = new Date(dte).getDate();
-    return {
-      dt : dateOnly,
-      day : listOfDay[new Date(dte).getDay()],
-      month:listOfMonth[new Date(dte).getMonth()]
-    }
-
-  }
-
-  //check if this page loaded when user has sign in or it is called by another page
-  if($('#greeting').val()){
-      toastr["info"]("Hello {{firstName}}!", "Welcome")
-  }
-
-  $('#modalEvent').on('show.bs.modal', function (event) {
-      var button = $(event.relatedTarget) // Button that triggered the modal
-      var userId = button.data('userId') // Extract info from data-* attributes
-      var modal = $(this)
-      var action =  button.data('action');
-      modal.find('.modal-title').text( button.data(action + ' event'));
-      if(action ='add'){
-        modal.find('input').val('');
-      }
-      
-
-})
-  
-
-  //get the events
-  $.ajax({url: "/event/getTodaysEvent",type:'POST'})
-  .done(function(result) {
-        console.log('events :', result);
-        //check whether we have today schedule
-        if(result.length > 0){
-            //loop through event
-            divGroup =$( "<div/>", {"class": "btn-toolbar mb-2 mb-md-0"});
-            divContainer = $( "<div/>", {"class": "container"});
-            $.each(result, function( index, evt ) {
-              
-              divRowStriped = $( "<div/>", {"class": "row row-striped"});
-              eventBanner =   $( "<div/>", {"class": "col-2 text-right"});
-              
-              headingDateDt = $('<h1/>',{"class":"display-4"});
-              headingDateDt.append($('<span/>',{"class":"badge badge-secondary"}).text(getDateObject(evt.startDate).dt));
-              headingDateMnth = $('<h2/>').html(getDateObject(evt.startDate).month);
-
-              //put heading into event banner
-              eventBanner.append(headingDateDt).append(headingDateMnth);
-
-              divEventDetail = $('<div/>',{"class":"col-10"})
-              headingEventTitle = $('<h3/>',{"class":"text-uppercase"});
-              eventTitle = $('<strong/>').html(evt.title);
-
-              //list event detail
-              listEventDetail = $('<ul/>',{"class":"list-inline"});
-
-              listItemTag = $('<li/>',{"class":"list-inline-item"});
-              
-              itemDay ='<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> ' + 
-              getDateObject(evt.startDate).day + ' </li>';
-              itemTime ='<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> '+ 
-              '12:30 PM - 2:00 PM</li>';
-              itemLocation ='<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> ' + 
-              evt.location+'</li>';
-              itemEditAction ='<li class="list-inline-item">'+
-                '<a href="#" data-user-id="'+evt.userId+'" data-action="edit" data-toggle="modal" data-target="#modalEvent"><i class="fa fa-edit" aria-hidden="true"></i> edit event</a></li>';
-
-            
-
-              $(listItemTag
-                .append(itemDay)
-                .append(itemTime)
-                .append(itemLocation)
-                .append(itemEditAction))
-              .appendTo(listEventDetail);
-            
-              eventDescription = $('<p/>').html(evt.description);
-
-              headingEventTitle.append(eventTitle);
-              divEventDetail.append(headingEventTitle).append(listEventDetail).append(eventDescription);
-              divRowStriped.append(eventBanner).append(divEventDetail);
-              divContainer.append(divRowStriped) 
-            }); 
-            divGroup.append(divContainer)
-            $(divGroup).appendTo( "div#today-schedule");
-
-        }
-
-
-  })
-});
 </script> 
   </body>
 </html>

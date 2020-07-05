@@ -6,9 +6,11 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const connectionProperties = require('./util/connection')
 
-//testing the model class js
+// the model class js
 const user = require('./model/user')
 const evt = require('./model/event')
+const reminder = require('./model/reminder')
+
 
 const app = express();
 const handlebars = require('express-handlebars');
@@ -58,6 +60,19 @@ var sess;
 app.get('/login',(req, res) => {
   res.render('layouts/login', {layout:'login'});
 });
+
+
+app.get('/',(req, res) => {
+  sess = req.session;
+  //check session whether it has already logged in
+  if(sess.isLoggedIn){
+    res.redirect('/event')
+  }else{
+    //if no login session then redirect to login page
+    res.redirect('/login')
+  }    
+});
+
 
 app.get('/event',(req, res) => {
   sess = req.session;
@@ -122,8 +137,11 @@ app.get('/profile',(req, res) => {
 app.post('/login',user.signIn);
 app.post('/logout',user.signOut);
 
+//this section for ajax api event
 app.post('/event/getTodaysEvent',  evt.getUserEventsToday);
+app.post('/event/getEventById',evt.getEventById)
 
+app.get('/reminder/getReminderList', reminder.getReminderList)
 
 
 //server listening
