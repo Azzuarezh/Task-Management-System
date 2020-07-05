@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />  
+    <title>Task Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Bootstrap core CSS -->
+    <link type="text/css" href="/assets/css/bootstrap.css" rel="stylesheet">
+    <!-- Toastr CSS -->
+    <link type="text/css"  href="/assets/css/toastr.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link type="text/css"  href="/assets/css/signin.css" rel="stylesheet">
+
+    <!-- Favicons -->
+
+    <link type="text/css" rel="icon" href="/assets/img/favicon-64x64.png" sizes="64x64" type="image/png">
+    <link type="text/css"  rel="manifest" href="/assets/img/manifest.json">
+    <link type="text/css"  rel="mask-icon" href="/assets/img/safari-pinned-tab.svg" color="#563d7c">
+    <link type="text/css"  rel="icon" href="/assets/img/favicon.ico">
+    <meta name="msapplication-config" content="/assets/img/browserconfig.xml">
+    <meta name="theme-color" content="#563d7c">
+    <style>
+        .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        }
+
+        @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+        }
+    </style>
+  </head>
+  <body class="text-center">
+    <input type="hidden" id="isLoggedOff" value="{{isLoggedOff}}">
+    <form class="form-signin" id="formSignUp">
+        <img class="mb-4" src="/assets/img/calendar.svg" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Sign Up</h1>
+        <div class="form-group">
+            <label for="firstName">First Name*:</label>
+            <input type="text" class="form-control" id="firstName">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" class="form-control" id="lastName">
+        </div>
+        <div class="form-group">
+            <label for="username">User name*:</label>
+            <input type="text" class="form-control" id="username">
+        </div>
+        <div class="form-group">
+            <label for="pwd">Password*:</label>
+            <input type="password" class="form-control" id="pwd">
+        </div> 
+        <div class="form-group">
+            <label for="confirmPwd">Confirm Password*:</label>
+                <input type="password" class="form-control" id="confirmPwd">
+        </div>
+        <a class="btn btn-secondary btn-small" href="/login">Back to login menu</a>
+        <button class="btn btn-primary btn-small"  type="button" id="btnSaveUser">Create User</button>
+  </form>
+
+
+<script type="text/javascript" src="/assets/js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+<script type="text/javascript" src="/assets/js/toastr.min.js"></script> 
+
+<script type="text/javascript">
+$(document).ready(function(){
+  
+  $('#btnSaveUser').on('click',function(){
+
+     var data = {
+        username:$("#username").val(), 
+        password:$("#pwd").val(),
+        firstName:$('#firstName').val(),
+        lastName:$('#lastName').val()
+    }
+    console.log(data)
+
+    if(data.username && data.password && data.firstName){
+        if(data.password == $('#confirmPwd').val()){
+            $.ajax({
+            type:'POST',
+            url:'/signup',
+            data: JSON.stringify(data),
+            contentType:"application/json; charset=utf-8",
+            dataType:"json"
+            })
+            .done(function(response){
+                if(response.status == 1){ 
+                    toastr["success"](response.message, "Success")           
+                }
+            }).fail(function(response){
+                toastr["error"](response.responseJSON.message, "Register failed")
+            })
+        }
+        else{
+            toastr["error"]("Password and Confirm password did not match", "Register failed")
+        }
+    }
+    else{
+        toastr["error"]("Please fill the required field", "Register failed")
+    }    
+  });
+
+});
+</script>
+</body>
+
+</html>

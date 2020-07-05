@@ -3,7 +3,7 @@ this is main functionallity javascript file for master.hbs layout
 to do things in front end side with jquery (excluding login page)
 */
 $(document).ready(function(){
-    
+    setTimeout(loadEvents(), 1);
     //to parse date to another type of data
     function getDateObject(dte){
       listOfDay = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -12,7 +12,11 @@ $(document).ready(function(){
       return {
         dt : dateOnly,
         day : listOfDay[new Date(dte).getDay()],
-        month:listOfMonth[new Date(dte).getMonth()]
+        month:listOfMonth[new Date(dte).getMonth()],
+        hour:new Date(dte).getHours(),
+        minutes:new Date(dte).getMinutes(),
+        seconds:new Date(dte).getSeconds(),
+        time: new Date(dte).getHours() +":"+new Date(dte).getMinutes() +":" + new Date(dte).getSeconds()
       }
     }
 
@@ -65,18 +69,70 @@ $(document).ready(function(){
             location : formObject.find('#location').val(),
             recurring: formObject.find('#recurring').prop('checked'),
             alldays : formObject.find('#alldays').prop('checked'),
-            reminderId : formObject.find('select#reminder').children("option:selected").val()
+            reminderId : formObject.find('select#reminder').children("option:selected").val(),
+            startDate : formObject.find('#startDate').val() +formObject.find('#startTime').val(),
+            endDate : formObject.find('#endDate').val() + formObject.find('#endTime').val() 
         }
         console.log('form object: ', EventObj)
+        
+        $.ajax({
+        type:'POST',
+        url:'/event/insertNewEvent',
+        data: JSON.stringify(EventObj),
+        contentType:"application/json; charset=utf-8",
+        dataType:"json"
+        })
+        .done(function(result){
+          console.log('response:',result)
+            if(result.status = 1){
+              toastr["success"](result.message, "Success")
+            }else{
+              toastr["error"](result.message, "Error")
+            }
+            $('#modalEvent').modal('hide')
+            loadEvents() 
+        })
+    })
+
+    //end insert/edit event
+
+    //remove event
+    $('.remove-event').on('click',function(){
+     alert('clicked')
     })
 
 
+    $('#btn-sign-out').on('click',function(){
+      if(confirm('Are you sure want to log out?')){
+        $.post('/logout').done(function(result){
+          console.log('result: ',result)
+            if(result.isLoggedOff){
+              window.location.href = '/login?isLoggedOff=true'
+            }
+        })
+      }
+    })
+    
 
-    //get the events
+    $('#btnUpdateUser').on('click',function(){
+      $.post('/updateUser').done(function(result){
+        console.log('result: ',result)
+          if(result.isLoggedOff){
+            window.location.href = '/login?isLoggedOff=true'
+          }
+      })
+    })
+
+
+    function loadEvents(){
+      //get the events
     $.ajax({url: "/event/getTodaysEvent",type:'POST'})
     .done(function(result) {
           console.log('events :', result);
+          //clear first
+          $("div#today-schedule").html('');
           //check whether we have today schedule
+          
           if(result.length > 0){
               //loop through event
               divGroup =$( "<div/>", {"class": "btn-toolbar mb-2 mb-md-0"});
@@ -104,20 +160,33 @@ $(document).ready(function(){
                 
                 itemDay ='<li class="list-inline-item"><i class="fa fa-calendar-o" aria-hidden="true"></i> ' + 
                 getDateObject(evt.startDate).day + ' </li>';
-                itemTime ='<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> '+ 
-                '12:30 PM - 2:00 PM</li>';
+                
+                txtTime = getDateObject(evt.startDate).time 
+                if(evt.endDate && getDateObject(evt.startDate).time){
+                  txtTime=txtTime + ' - ' + getDateObject(evt.startDate).time
+                }
+
+                itemTime ='<li class="list-inline-item"><i class="fa fa-clock-o" aria-hidden="true"></i> '+ txtTime +'</li>';
                 itemLocation ='<li class="list-inline-item"><i class="fa fa-location-arrow" aria-hidden="true"></i> ' + 
                 evt.location+'</li>';
                 itemEditAction ='<li class="list-inline-item">'+
-                  '<a href="#" data-user-id="'+evt.userId+'" data-action="edit" data-toggle="modal" data-target="#modalEvent"><i class="fa fa-edit" aria-hidden="true"></i> edit event</a></li>';
-  
+                  '<i class="fa fa-edit" aria-hidden="true" data-user-id="'+evt.userId+'" '+
+                  'data-action="edit" data-toggle="modal" data-target="#modalEvent"></i></li>';
+                
+                  itemRemoveAction = '<li class="list-inline-item remove-event">'+
+                '<i class="fa fa-trash " aria-hidden="true" data-user-id="'+ evt.userId +'" data-event-id="'+ evt.eventId +'" ' +
+                'data-action="remove" data-toggle="modal" data-target="#modalRemoveEvent"></i></li>';
               
   
+                
+
                 $(listItemTag
                   .append(itemDay)
                   .append(itemTime)
                   .append(itemLocation)
-                  .append(itemEditAction))
+                  .append(itemEditAction)
+                  .append(itemRemoveAction)
+                  )
                 .appendTo(listEventDetail);
               
                 eventDescription = $('<p/>').html(evt.description);
@@ -131,7 +200,22 @@ $(document).ready(function(){
               $(divGroup).appendTo( "div#today-schedule");
   
           }
+          else{
+              //loop through event
+              divGroup =$( "<div/>", {"class": "btn-toolbar mb-2 mb-md-0"});
+              divContainer = $( "<div/>", {"class": "container"});
+              divRowStriped = $( "<div/>", {"class": "row row-striped"});
+              divRowStriped.append('<h5>You have no event today. '+
+              'Enjoy your day <i class="fa fa-coffee" aria-hidden="true"></i></h5>')
+              divContainer.append(divRowStriped);
+              divGroup.append(divContainer)
+              $(divGroup).appendTo( "div#today-schedule");
+
+          }
   
   
     })
+    }
+
+    
   });

@@ -2,18 +2,19 @@
     <h2>{{firstName}} {{lastName}}</h2>
     <div class="d-flex justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom">            
         <div class="btn-toolbar mb-2 mb-md-0">
+            <form id="formUser">
             <div class="container">
                  <div class="form-group">
-                    <label for="txtfirstName">Fist Name:</label>
-                    <input type="text" class="form-control" id="txtfirstName">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" class="form-control" id="firstName" value="{{firstName}}">
                 </div>
                 <div class="form-group">
-                    <label for="txtlastName">Fist Name:</label>
-                    <input type="text" class="form-control" id="txtlastName">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" class="form-control" id="lastName" value="{{lastName}}">
                 </div>
                 <div class="form-group">
-                    <label for="txtUsername">User name:</label>
-                    <input type="text" class="form-control" disabled="disabled" id="txtUsername">
+                    <label for="username">User name:</label>
+                    <input type="text" class="form-control" disabled="disabled" id="username" value="{{username}}">
                 </div>
                 <div class="form-group">
                     <label for="pwd">Password:</label>
@@ -24,8 +25,9 @@
                      <input type="password" class="form-control" id="confirmPwd">
                 </div>
 
-                <button class="btn btn-primary btn-small" id="btnSaveUser">Save</button>
+                <button class="btn btn-primary btn-small" id="btnUpdateUser">Update</button>
             </div>
+            </form>
         </div>
     </div>
 </main>

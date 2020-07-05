@@ -14,6 +14,8 @@
     <link type="text/css"  href="/assets/css/toastr.css" rel="stylesheet">
     <!-- Bootsrap-datepicker CSS -->
     <link type="text/css"  href="/assets/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <!-- QueryBuilder CSS -->
+    <link type="text/css"  href="/assets/css/query-builder.defaultcss" rel="stylesheet">
 
 
     <!-- Custom styles for this template -->
@@ -30,10 +32,13 @@
         {{> calendarContent}}
       {{else if profilePage}}
         {{> profileContent}}
+      {{else if searchPage}}
+        {{> searchEventContent}}
       {{/if}}
       
       {{> modalEventContent }}
       {{> modalEventQueryContent}}
+      {{> modalRemoveEvent}}
 
     <script type="text/javascript" src="./assets/js/jquery-3.5.1.min.js"></script>
     <script type="text/javascript" src="./assets/js/moment-with-locales.js"></script>
@@ -44,14 +49,68 @@
 
     <!-- bootstrap-datepicker -->
     <script type="text/javascript" src="./assets/js/bootstrap-datepicker.min.js"></script>
+    <!-- bootstrap-datepicker -->
+    <script type="text/javascript" src="./assets/js/query-builder.standalone.min.js"></script>
+
     <!-- index.js is our functionality -->
     <script type="text/javascript" src="./assets/js/App/index.js"></script>
+    
     <script>
       $(document).ready(function(){
-            //check if this page loaded when user has sign in or it is called by another page
+        //check if this page loaded when user has sign in or it is called by another page
         if($('#greeting').val()){
             toastr["info"]("Hello {{firstName}}!", "Welcome")
         }
+
+        // Fix for Bootstrap Datepicker
+        $('#builder-widgets').on('afterUpdateRuleValue.queryBuilder', function(e, rule) {
+          if (rule.filter.plugin === 'datepicker') {
+            rule.$el.find('.rule-value-container input').datepicker('update');
+          }
+        });
+        
+        $('#builder-widgets').queryBuilder({          
+          filters: [{
+            id: 'startDate',
+            label: 'Start Date',
+            type: 'date',
+            validation: {
+              format: 'YYYY/MM/DD'
+            },
+            plugin: 'datepicker',
+            plugin_config: {
+              format: 'yyyy-mm-dd',
+              todayBtn: 'linked',
+              todayHighlight: true,
+              autoclose: true
+            }
+          },
+          {
+            id: 'endDate',
+            label: 'End Date',
+            type: 'date',
+            validation: {
+              format: 'YYYY/MM/DD'
+            },
+            plugin: 'datepicker',
+            plugin_config: {
+              format: 'yyyy-mm-dd',
+              todayBtn: 'linked',
+              todayHighlight: true,
+              autoclose: true
+            }
+          },
+          {
+            id: 'location',
+            label: 'location',
+            type: 'string'
+          }
+          ]
+        });
+
+
+
+
       })
     </script>
 

@@ -34,10 +34,26 @@ let query = conn.query(sql, [username,password],
 }
 
 exports.signUp = function(req, res){
+    var user = req.body.
+    console.log('user:', user)
+    let InsertUserSql = "insert into users(firstName,lastName,username,password)"+
+    "values(?,?,?,?)";
+    let insertUserQuery = conn.query(
+        InsertUserSql,
+        [user.firstName,user.lastName,user.username,user.password],
+        function(err, result){
+            if(err) {
+                console.error("ERR! : ",err.stack);
+                res.status(500).send({ status:0,message: 'Something failed!', status:0})
+            }
+            else{
+                res.status(200).send({status:1, message:"User Successfully Created. Please go back to login page"})
+            }
+        })
 
 }
 
-exports.signOut = function(req, res, next){
+exports.signOut = function(req, res){
     console.log('req session: ',req.session)
     req.session.destroy(function(err){
         if(err){
@@ -45,7 +61,7 @@ exports.signOut = function(req, res, next){
         } else {
             console.log('req.session after destroyed:', req.session)
             res.clearCookie('Session');
-            res.redirect('/login');
+            res.send({'isLoggedOff':true}) 
         }
     });
 }

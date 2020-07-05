@@ -58,7 +58,30 @@ var sess;
 //this section is for views path
 
 app.get('/login',(req, res) => {
-  res.render('layouts/login', {layout:'login'});
+  console.log(req.query)
+  console.log('isLoggedOff?', req.query.isLoggedOff)
+  res.render('layouts/login', {
+    layout:'login',
+    isLoggedOff:req.query.isLoggedOff
+  });
+});
+
+
+app.get('/signup',(req, res) => {
+  sess = req.session;
+  //check session whether it has already logged in
+  if(sess.isLoggedIn){
+    res.redirect('/event')
+  }else{
+    //if no login session then we can sign up
+    res.render('layouts/signup', {
+      layout:'signup'
+    });
+  } 
+  
+
+
+  
 });
 
 
@@ -122,7 +145,25 @@ app.get('/profile',(req, res) => {
       pageTitle:'Profile',
       profilePage :true,
       firstName:sess.firstName,
-      lastName:sess.lastName  
+      lastName:sess.lastName,
+      username:sess.username  
+    });``
+  }else{
+    //if no login session then redirect to login page
+    res.redirect('/login')
+  }    
+});
+
+
+app.get('/search',(req, res) => {
+  sess = req.session;
+  //check session whether it has already logged in
+  if(sess.isLoggedIn){
+    res.render('layouts/master', 
+    {
+      layout:'master',
+      pageTitle:'Search',
+      searchPage :true 
     });
   }else{
     //if no login session then redirect to login page
@@ -136,10 +177,14 @@ app.get('/profile',(req, res) => {
 // this section for ajax api path (event, user, calendar which call via Ajax)
 app.post('/login',user.signIn);
 app.post('/logout',user.signOut);
+app.post('/signup', user.signUp);
 
 //this section for ajax api event
 app.post('/event/getTodaysEvent',  evt.getUserEventsToday);
 app.post('/event/getEventById',evt.getEventById)
+
+app.post('/event/insertNewEvent',evt.insertNewEvent)
+app.post('/event/removeEvent', evt.removeEvent)
 
 app.get('/reminder/getReminderList', reminder.getReminderList)
 
