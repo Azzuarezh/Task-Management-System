@@ -58,8 +58,6 @@ var sess;
 //this section is for views path
 
 app.get('/login',(req, res) => {
-  console.log(req.query)
-  console.log('isLoggedOff?', req.query.isLoggedOff)
   res.render('layouts/login', {
     layout:'login',
     isLoggedOff:req.query.isLoggedOff
@@ -163,7 +161,9 @@ app.get('/search',(req, res) => {
     {
       layout:'master',
       pageTitle:'Search',
-      searchPage :true 
+      searchPage :true,
+      firstName:sess.firstName,
+      lastName:sess.lastName 
     });
   }else{
     //if no login session then redirect to login page
@@ -179,12 +179,16 @@ app.post('/login',user.signIn);
 app.post('/logout',user.signOut);
 app.post('/signup', user.signUp);
 
+app.post('/profile/updateUser',user.updateUser);
+
 //this section for ajax api event
 app.post('/event/getTodaysEvent',  evt.getUserEventsToday);
-app.post('/event/getEventById',evt.getEventById)
+app.get('/event/getEventById',evt.getEventById)
 
 app.post('/event/insertNewEvent',evt.insertNewEvent)
 app.post('/event/removeEvent', evt.removeEvent)
+
+app.post('/event/query',evt.eventQuery)
 
 app.get('/reminder/getReminderList', reminder.getReminderList)
 

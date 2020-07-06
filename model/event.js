@@ -16,10 +16,6 @@ exports.getUserEventsToday = function(req, res){
         var userId = req.session.userId 
         var todayStartDatetime = dateparser.todayStartDatetime(); 
         var todayEndDatetime = dateparser.todayEndDatetime();
-
-        console.log('userid :', userId);
-        console.log('today start datetime : ', todayStartDatetime)
-        console.log('today end datetime : ', todayEndDatetime)
         
         let sql = "select * from view_user_events where userid = ? and(`startDate` >= ? and    `endDate`<= ? ) order by `startDate` asc";
         let query = conn.query(sql, [userId,todayStartDatetime,todayEndDatetime],
@@ -27,24 +23,54 @@ exports.getUserEventsToday = function(req, res){
             if(err) {
                 console.error("ERR! : ",err.stack);
                 res.status(500).send({ error: 'Something failed!'})
-            } 
-            console.log(result)      
+            }     
             res.send(result)       
         });  
     }
     
 }
 
+exports.eventQuery = function(req, res){
+    console.log('req:', req)
+    console.log('req.body :', req.body)
+    /*if(typeof(req.session.userId) == 'undefined'){        
+        console.error("there is no user id in session. please login to see the event");
+        res.status(500).send({ error: 'There is no user id in session. please login to see the event' })
+    }else{*/
+        
+        var userId = req.session.userId;
+ 
+        var condition = req.body.condition;
+        let sql = "select * from view_user_events where userid = ?";
+        
+        if(condition && condition !=''){
+            sql+=' and('+condition+')';
+            
+        }
+        
+        console.log('sql : ', sql)
+        let query = conn.query(sql, [userId],
+        function(err,result){
+            if(err) {
+                console.error("ERR! : ",err.stack);
+                res.status(500).send({ error: 'Something failed!'})
+            } 
+            console.log('search result :' ,result)      
+            res.send({"data":result,"draw": 1,"recordsTotal": result.length})       
+        });  
+    /*}*/ 
+}
+
 exports.getEventById = function(req,res){
+    console.log('req.params :', req.params, ' req.body', req.body, 'req.query', req.query)
     if(typeof(req.session.userId) == 'undefined'){        
         console.error("there is no user id in session. please login to see the event");
         res.status(500).send({ error: 'There is no user id in session. please login to see the event' })
     }else{
         var userId = req.session.userId 
-        var eventId = req.body.eventId
+        var eventId = req.query.eventId
 
-        console.log('userid :', userId)
-        console.log('eventid', eventid)
+        console.log('eventid', eventId)
 
         let sql = "select * from events where eventId =?";
         let query = conn.query(sql, [eventId],
@@ -53,8 +79,10 @@ exports.getEventById = function(req,res){
                 console.error("ERR! : ",err.stack);
                 res.status(500).send({ error: 'Something failed!'})
             } 
-            console.log(result)      
-            res.send(result)       
+            if(result.length = 1){
+                res.send(result[0])
+            }      
+                   
         });  
     }
 }
@@ -103,18 +131,85 @@ exports.insertNewEvent = function(req, res){
                     })
             }
                     
-        });
-        
-        
-
-        
-
-
-        
+        });   
     }
 }
 
-exports.removeEvent = function(req, res){
-
+exports.updateEvent = function(req, res){
+    if(typeof(req.session.userId) == 'undefined'){        
+        console.error("there is no user id in session. please login to see the event");
+        res.status(500).send({ error: 'There is no user id in session. please login to see the event' })
+    }else{
+        var userId = req.session.userId 
+        var eventId = req.body.eventId
+        var event = req.body
+        let UpdateEventSql = "Update events SET title=?, description=?, location=?, recurring=?, allDay=? , startDate=?, endDate=?,reminderId=? "+
+        "where eventId =?";
+        
+        let UpdateEventQuery = conn.query(UpdateEventSql, 
+            [eventId],
+        function(err, result){
+            if(err) {
+                console.error("ERR! : ",err.stack);
+                res.status(500).send({ message: 'Something failed!', status:0})
+            }
+            else{
+               //delete insert
+                let RemoveUserEventSql="DELETE FROM user_events where eventId =?";
+                let RemoveUserEventQuery = conn.query(RemoveUserEventSql,[eventId],
+                    function(err, result){
+                        if(err){
+                            console.error("ERR! : ",err.stack);
+                            res.status(500).send({ message: 'Something failed!', status:0})
+                        }else{
+                            let insertUserEventQuery = conn.query(InsertUserEventSql,[eventId,userId],
+                                function(err, result){
+                                    if(err){
+                                        console.error("ERR! : ",err.stack);
+                                        res.status(500).send({ message: 'Something failed!', status:0})
+                                    }else{
+                                        res.status(200).send({status:1, message:"Event Successfully Updated"})
+                                    }  
+                                })
+                        }  
+                    })
+            }
+                    
+        });   
+    }
     
+}
+
+exports.removeEvent = function(req, res){
+    
+    if(typeof(req.session.userId) == 'undefined'){        
+        console.error("there is no user id in session. please login to see the event");
+        res.status(500).send({ error: 'There is no user id in session. please login to see the event' })
+    }else{
+        eventId = req.body.eventId
+        let RemoveEventSql = "DELETE  FROM events WHERE eventId =?";
+        
+        let RemoveEventQuery = conn.query(RemoveEventSql, 
+            [ eventId],
+        function(err, result){
+            if(err) {
+                console.error("ERR! : ",err.stack);
+                res.status(500).send({ message: 'Something failed!', status:0})
+            }
+            else{
+               
+                let RemoveUserEventSql="DELETE FROM user_events where eventId =?";
+                let RemoveUserEventQuery = conn.query(RemoveUserEventSql,[eventId],
+                    function(err, result){
+                        if(err){
+                            console.error("ERR! : ",err.stack);
+                            res.status(500).send({ message: 'Something failed!', status:0})
+                        }else{
+                            res.status(200).send({status:1, message:"Event Successfully Removed"})
+                        }  
+                    })
+            }
+                    
+        });   
+    }
 }

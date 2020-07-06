@@ -34,7 +34,7 @@ let query = conn.query(sql, [username,password],
 }
 
 exports.signUp = function(req, res){
-    var user = req.body.
+    var user = req.body
     console.log('user:', user)
     let InsertUserSql = "insert into users(firstName,lastName,username,password)"+
     "values(?,?,?,?)";
@@ -66,14 +66,29 @@ exports.signOut = function(req, res){
     });
 }
 
-exports.getUserDetail = function(req, res, next){
+exports.getUserDetail = function(req, res){
 
 }
 
-exports.updateUser = function(req, res, next){
-
+exports.updateUser = function(req, res){
+    var user = req.body
+    user.userId = req.session.userId
+    console.log('user:', user)
+    let UpdateUserSql = "UPDATE users set firstName = ?, lastName=?, password=? WHERE userId=?";
+    let UpdateUserQuery = conn.query(
+        UpdateUserSql,
+        [user.firstName,user.lastName,user.password, user.userId],
+        function(err, result){
+            if(err) {
+                console.error("ERR! : ",err.stack);
+                res.status(500).send({ status:0,message: 'Something failed!', status:0})
+            }
+            else{
+                res.status(200).send({status:1, message:"User Successfully Updated."})
+            }
+        })
 }
 
-exports.changePassword = function(req, res, next){
+exports.changePassword = function(req, res){
 
 }

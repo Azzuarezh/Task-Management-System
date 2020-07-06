@@ -2,5 +2,6 @@ module.exports = {
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'db_task'
+    database: 'db_task',
+    secret:2359
   }

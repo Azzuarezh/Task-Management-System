@@ -1,13 +1,23 @@
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" id="content-section">    
     <h2>Search Event</h2>
-    <div class="d-flex justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom">
-        <div class="queryBuilder" id="builder-widgets"></div>
-        
+    <div class="justify-content-between pb-5 mb-3 border-bottom">
+        <div class="queryBuilder" id="builder-widgets"></div>        
     </div>
-    <h2 id="heading-result">result</h2>
-    <div id="result"
-            class="d-flex justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom" >
-        
+    <button class="btn btn-primary" type="button" id="btnSearch">Search</button>
+    <h2 id="heading-result" style="display:none">result</h2>
+    <div class="justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom" > 
+        <table id="resultTable" class="display" style="width:100%; display:none">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Reminder</th>
+            </tr>
+        </thead>
+        </table> 
     </div>  
   
 </main>
