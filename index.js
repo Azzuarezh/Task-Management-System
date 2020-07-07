@@ -186,6 +186,7 @@ app.post('/event/getTodaysEvent',  evt.getUserEventsToday);
 app.get('/event/getEventById',evt.getEventById)
 
 app.post('/event/insertNewEvent',evt.insertNewEvent)
+app.post('/event/updateEvent',evt.updateEvent)
 app.post('/event/removeEvent', evt.removeEvent)
 
 app.post('/event/query',evt.eventQuery)

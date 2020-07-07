@@ -17,18 +17,11 @@ $(document).ready(function(){
         minutes:moment(dte).format('mm'),
         seconds: moment(dte).format('ss'),
         time: moment(dte).format('hh:mm:ss'),
-        fullDate : moment(dte).format('YYYY-MM-d')
+        fullDate : moment(dte).format('YYYY-MM-DD')
       }
     }
 
-    //datepicker configuration
-    $('.dt-picker').datepicker({
-      format :'yyyy-mm-dd '
-    });
-
    //datatable configuration
-  
-
  $('#btnSearch').on('click',function(){
   var condition ="";
    $('#resultTable').show();
@@ -86,10 +79,11 @@ $(document).ready(function(){
             data:{eventId:eventId}
           }).done(function(result){
              console.log(result) 
-             modal.find('#eventId').val(result.title);
+             modal.find('#eventId').val(result.eventId);
              modal.find('#title').val(result.title);
              modal.find('#description').val(result.description);
              modal.find('#location').val(result.location);
+             console.log('full date start date: ', getDateObject(result.startDate).fullDate)
              modal.find('#startDate').val(getDateObject(result.startDate).fullDate);
              modal.find('#startTime').val(getDateObject(result.startDate).time);
              modal.find('#endDate').val(getDateObject(result.endDate).fullDate);
@@ -112,7 +106,107 @@ $(document).ready(function(){
     // end modal event show function
 
 
+    $('#modalEventQuery').find('#generateEvent').on('click', function(){
+      var evtQuery = $('#query').val();
+      console.log(evtQuery);
+      var regexTime = new RegExp(/\d+?(?=((A|P)M))\w+/gi);
+      var strTime ="";
+      if(evtQuery.match(regexTime)){
+        strTime = evtQuery.match(regexTime)[0];;
+      }
+      
+      console.log('strTime:', strTime)
+      tm = strTime.slice(0,strTime.length - 2)
+      var ampm = strTime.slice(-2);
+      
+      tomorrowPattern = new RegExp(/\btomorrow\b/gi)
+      todayPattern = new RegExp(/\btoday\b/gi)
 
+      startDate = new Date();
+      console.log('startdate :', startDate)
+      console.log('match? ',evtQuery.match(tomorrowPattern))
+      if(evtQuery.match(tomorrowPattern)!= null && evtQuery.match(tomorrowPattern).length > 0){
+        startDate.setDate(new Date().getDate() + 1);
+      }
+      else if(evtQuery.match(todayPattern)!= null && evtQuery.match(todayPattern).length > 0){
+        startDate.setDate(new Date().getDate());
+      }
+      
+      console.log('startdate v2:', startDate)
+
+      //split the text with word "at"
+      strParseQuery = evtQuery.split("at")
+      title= strParseQuery[0]
+      loc = strParseQuery[1].replace(tomorrowPattern,'').replace(todayPattern,'');
+      strTimePatt= new RegExp('/' + strTime +'/gi') 
+      loc = loc.replace(strTime,'')
+      var evtObject = {
+        "title": title,
+        "location":loc,
+        "time":(ampm ='PM')?(parseInt(tm) + 12) + ":00:00":tm +":00:00",
+        "startDate":startDate,
+        "endDate":"",
+        "allDays":0,
+        "recurring":"",
+        "reminderId":""
+      }
+      console.log('generated event id: ', evtObject)
+      var tbl =$('#tblEvent');
+      tbl.show();
+      tbl.find('td#title').data('value', evtObject.title).html(evtObject.title)
+      tbl.find('td#location').data('value', evtObject.location).html(evtObject.location)
+      tbl.find('td#startDate').data('value',moment(evtObject.startDate).format('YYYY-MM-DD'))
+      .html(moment(evtObject.startDate).format('YYYY-MM-DD'))
+      tbl.find('td#startTime').data('value',evtObject.time).html(evtObject.time)
+
+    })
+
+
+    $('#btnSaveEventQuery').on('click',function(){
+      
+      var tbl =$('#tblEvent');
+      var event = {
+            title: tbl.find('td#title').data('value'),
+            location : tbl.find('td#location').data('value'),
+            startDate : tbl.find('td#startDate').data('value') +" "+tbl.find('td#startTime').data('value')
+      }
+
+      console.log('event :', event)
+
+      if(!event.title || event.title ==''
+        || typeof(event.title) =='undefined'
+        || !event.location||event.location ==''
+        || typeof(event.location)=='undefined' 
+        || event.startDate == null){
+          alert('Cannot add the event, please try to generate again.')
+      }else{
+        if(confirm('is the event correct?')){
+        
+          console.log('event: ', event)
+          event.c
+
+          $.ajax({
+            type:'POST',
+            url:'/event/insertNewEvent',
+            data: JSON.stringify(event),
+            contentType:"application/json; charset=utf-8",
+            dataType:"json"
+            })
+            .done(function(result){
+              console.log('response:',result)
+                if(result.status = 1){
+                  toastr["success"](result.message, "Success")
+                }else{
+                  toastr["error"](result.message, "Error")
+                }
+                $('#modalEventQuery').modal('hide')
+                event = {}
+                $('#tblEvent').hide();
+                loadEvents() 
+            })
+        }
+      }   
+    })
     
     //insert/update event
     $('#btnSaveEvent').on('click', function(){
@@ -131,7 +225,6 @@ $(document).ready(function(){
             endDate : formObject.find('#endDate').val() + ' '+ formObject.find('#endTime').val() 
         }
         console.log('form object: ', EventObj)
-        alert('s')
         
         if(evtAction =='add'){
           $.ajax({
@@ -153,6 +246,7 @@ $(document).ready(function(){
             })
         }  
         else{
+          console.log('edit evnt obj:',EventObj)
           $.ajax({
             type:'POST',
             url:'/event/UpdateEvent',
@@ -182,7 +276,7 @@ $(document).ready(function(){
         modal.find('#btnRemoveEvent').data('eventId',eventId)
     })
 
-    //remove event
+    //remove eventgenerae
     $('#btnRemoveEvent').on('click',function(){
       $.ajax({
         type:'POST',

@@ -15,33 +15,34 @@
             <input type="text" class="form-control" id="query" value="">
             <div class="input-group-append">
                 <button class="input-group-text" id="generateEvent" type="button">Generate</button>
-            </div>
+            </div>          
           </div>
         </form>
-        <div class="clearfix">&nbsp;</div>
+        <div class="clearfix"><i>e.g : going to work <strong>at</strong> office <strong>tomorrow 6AM</strong> </i><br/>
+        <i>Only validate exact time (o'clock))</strong> </i></div>
         <table class="table table-bordered table-sm table-hover" id="tblEvent" style="display:none">
             <tbody>
                 <tr>
                     <td>Event Title</td>
-                    <td id="eventTitle">_title</td>
+                    <td id="title">_title</td>
                 </tr>
                 <tr>
-                    <td id="eventLocation">Location</td>
-                    <td>_location</td>
+                    <td >Location</td>
+                    <td id="location">_location</td>
                 </tr>
                 <tr>
                     <td>Start Date</td>
-                    <td id="eventStartDate">_startDate</td>
+                    <td id="startDate">_startDate</td>
                 </tr>
                 <tr>
-                    <td>End Date</td>
-                    <td id="eventEndDate">_endDate</td>
+                    <td>Start Time</td>
+                    <td id="startTime">_startTime</td>
                 </tr>
             </tbody>
         </table>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-sm btn-primary" id="btnSaveEvent"><i class="fa fa-save"></i>  Save event</button>
+        <button class="btn btn-sm btn-primary" id="btnSaveEventQuery"><i class="fa fa-save"></i>  Save event</button>
       </div>
     </div>
   </div>
